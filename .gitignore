@@ -1,0 +1,11 @@
+hengran.sqlite3
+*.sqlite3
+*.db
+*.log
+__pycache__/
+*.pyc
+.env
+.env.*
+node_modules/
+wechat-miniprogram/
+project.private.config.json

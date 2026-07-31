@@ -1,0 +1,392 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>衡控体重</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="phone-shell" aria-label="手机模拟器">
+    <section id="splash" class="screen splash-screen is-active" aria-label="启动页">
+      <div class="brand-lockup">
+        <div class="brand-mark" aria-hidden="true">
+          <span class="eye eye-left"></span>
+          <span class="eye eye-right"></span>
+          <span class="smile"></span>
+        </div>
+        <div class="brand-text">衡控体重<br />燃动日常</div>
+        <div class="brand-site">@hengran.cn</div>
+      </div>
+    </section>
+
+    <section id="home" class="screen home-screen" aria-label="体重记录首页">
+      <div class="content-scroll">
+        <header class="summary-card">
+          <p class="slogan">衡控体重，燃动日常！<br />已减</p>
+          <div class="loss-number"><strong>6.2</strong><span>斤</span></div>
+          <div class="metrics-panel">
+            <div>
+              <span>当前体重/斤</span>
+              <strong id="currentWeight">144.7</strong>
+            </div>
+            <div>
+              <span>BMI</span>
+              <strong>26</strong>
+            </div>
+            <div>
+              <span>体脂率%</span>
+              <strong>28</strong>
+            </div>
+          </div>
+        </header>
+
+        <section class="timeline" id="timeline" aria-label="体重时间线"></section>
+      </div>
+
+      <section id="foodView" class="food-view" aria-label="饮食记录页">
+        <header class="food-header">
+          <button class="month-nav" id="prevMonth" type="button" aria-label="上个月">‹</button>
+          <button class="month-title" id="monthPicker" type="button" aria-label="切换月份">
+            <strong id="foodMonthText">5月</strong>
+            <span id="foodMonthMeta">周五<br />2026年</span>
+            <span class="down-caret">⌄</span>
+          </button>
+          <button class="month-nav" id="nextMonth" type="button" aria-label="下个月">›</button>
+          <button class="today-button" id="todayFoodMonth" type="button" aria-label="回到今天">
+            <svg viewBox="0 0 32 32" aria-hidden="true">
+              <rect x="5" y="6" width="22" height="22" rx="3" fill="none" stroke="currentColor" stroke-width="2.4" />
+              <path d="M11 3v7M21 3v7M10 15h12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
+              <text x="16" y="24" text-anchor="middle" font-size="10" font-weight="900" fill="currentColor">今</text>
+            </svg>
+          </button>
+        </header>
+
+        <section class="date-dropdown" id="dateDropdown" aria-label="选择日期"></section>
+
+        <div class="week-row" aria-label="星期">
+          <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+        </div>
+
+        <section class="month-grid" id="monthGrid" aria-label="月历"></section>
+
+        <section class="food-stats" aria-label="本月统计">
+          <div><strong id="statCheckDays">0</strong><span>打卡天数</span></div>
+          <div><strong id="statLossDays">0</strong><span>减重天数</span></div>
+          <div><strong id="statGainDays">0</strong><span>增重天数</span></div>
+          <div><strong id="statMonthChange">0</strong><span>本月变化</span></div>
+        </section>
+
+        <section class="food-list" id="foodList" aria-label="当天饮食记录"></section>
+      </section>
+      <section id="trendView" class="trend-view" aria-label="趋势页">
+        <section class="trend-panel">
+          <header class="trend-header">
+            <div class="trend-title">
+              <strong>趋势</strong>
+              <button id="trendUnitToggle" class="trend-unit-toggle" type="button">斤⌄</button>
+            </div>
+            <div class="trend-tabs" role="tablist" aria-label="趋势时间范围">
+              <button class="active" type="button" data-trend-range="default">默认</button>
+              <button type="button" data-trend-range="week">近一周</button>
+              <button type="button" data-trend-range="quarter">近三月</button>
+              <button type="button" data-trend-range="all">全部</button>
+            </div>
+          </header>
+
+          <div class="chart-wrap" id="trendChartWrap" aria-label="体重趋势图"></div>
+
+          <section class="trend-stats" aria-label="趋势统计">
+            <div><strong id="trendCheckDays">0</strong><span>打卡天数</span></div>
+            <div><strong id="trendLossDays">0</strong><span>减重天数</span></div>
+            <div><strong id="trendGainDays">0</strong><span>增重天数</span></div>
+            <div><strong id="trendChange">0.0斤</strong><span>阶段变化</span></div>
+          </section>
+        </section>
+
+        <div class="trend-empty" id="trendHint">点击圆点显示当天数据哦~</div>
+      </section>
+      <section id="chatView" class="chat-view" aria-label="聊天话题页">
+        <div class="chat-content">
+          <section class="morning-copy">
+            <p id="aiGreeting">早上好！又是新的一天☀~</p>
+            <p id="aiSummary">💦4月里有1天，你都坚持减重，快<br />来看看你付出的汗水与努力吧！</p>
+          </section>
+
+          <article class="report-card" id="reportCardButton" role="button" tabindex="0" aria-label="生成体重月报">
+            <svg class="report-icon" viewBox="0 0 64 64" aria-hidden="true">
+              <rect x="8" y="9" width="45" height="45" rx="5" fill="none" stroke="currentColor" stroke-width="5" />
+              <path d="M18 32l11 11 26-28" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <div>
+              <strong id="aiReportTitle">4月减重月报</strong>
+              <span id="aiReportSubtitle">减重小结｜一路花开，春风里步履不停。</span>
+            </div>
+          </article>
+
+          <section class="topic-area" aria-label="聊天话题">
+            <h2>聊聊新话题</h2>
+            <button class="chat-topic" type="button">游泳是最燃脂的运动吗？</button>
+            <button class="chat-topic" type="button">早上一杯黑咖啡是否能加速燃脂？</button>
+            <button class="chat-topic" type="button">真的有人喝水都能胖吗？</button>
+          </section>
+
+          <section class="chat-thread" id="chatThread" aria-label="小衡对话">
+            <article class="chat-bubble bot">我是小衡，可以帮你分析体重、饮食和运动计划。</article>
+          </section>
+        </div>
+
+        <form class="chat-compose" id="chatForm" aria-label="消息输入区">
+          <button class="voice-button" type="button" aria-label="语音输入">
+            <svg viewBox="0 0 32 32" aria-hidden="true">
+              <rect x="11" y="5" width="10" height="15" rx="5" fill="none" stroke="currentColor" stroke-width="2.5" />
+              <path d="M7 15v2a9 9 0 0 0 18 0v-2M16 26v-4M12 26h8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+            </svg>
+          </button>
+          <button class="plus-chat-button" type="button" aria-label="添加">
+            <svg viewBox="0 0 32 32" aria-hidden="true">
+              <circle cx="16" cy="16" r="12" fill="none" stroke="currentColor" stroke-width="2.5" />
+              <path d="M16 9v14M9 16h14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+            </svg>
+          </button>
+          <input class="message-input" id="chatInput" type="text" autocomplete="off" placeholder="给小衡发消息" />
+          <button class="chat-send" id="chatSend" type="submit">发送</button>
+        </form>
+      </section>
+      <section id="profileView" class="profile-view" aria-label="个人中心页">
+        <section class="profile-hero">
+          <button class="settings-button" type="button" aria-label="设置" data-profile-action="设置">
+            <svg viewBox="0 0 32 32" aria-hidden="true">
+              <path d="M13.5 4h5l1 3.2c.7.3 1.4.7 2 1.2l3.3-.7 2.5 4.3-2.4 2.4c.1.5.1 1.1.1 1.6s0 1.1-.1 1.6l2.4 2.4-2.5 4.3-3.3-.7c-.6.5-1.3.9-2 1.2l-1 3.2h-5l-1-3.2c-.7-.3-1.4-.7-2-1.2l-3.3.7-2.5-4.3 2.4-2.4C8 17.1 8 16.5 8 16s0-1.1.1-1.6L5.7 12l2.5-4.3 3.3.7c.6-.5 1.3-.9 2-1.2l1-3.2Z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" />
+              <circle cx="16" cy="16" r="4.2" fill="none" stroke="currentColor" stroke-width="2.6" />
+            </svg>
+          </button>
+          <button class="profile-main profile-login-trigger" id="profileLoginTrigger" type="button">
+            <div class="avatar-circle" aria-hidden="true">
+              <svg viewBox="0 0 100 100">
+                <circle cx="50" cy="39" r="14" fill="none" stroke="currentColor" stroke-width="7" />
+                <path d="M19 86c7-20 20-30 31-30s24 10 31 30" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" />
+              </svg>
+            </div>
+            <div class="profile-name">
+              <strong id="profileName">衡燃</strong>
+              <span id="profileLoginText">点击此处注册/登录</span>
+            </div>
+            <span class="profile-chevron">»</span>
+          </button>
+          <div class="profile-stats">
+            <div><strong>2</strong><span>打卡天数</span></div>
+            <i></i>
+            <div><strong>-1.8斤</strong><span>体重变化</span></div>
+          </div>
+        </section>
+
+        <section class="premium-card">
+          <div>
+            <strong>开通高级账户</strong>
+            <span>解锁永久特权，28元限时抢购中</span>
+          </div>
+          <button type="button" data-profile-action="立即开通">立即开通</button>
+        </section>
+
+        <section class="settings-list" aria-label="设置列表">
+          <button type="button" data-profile-action="身体档案"><span class="setting-icon body-small">♙</span><strong>身体档案</strong><i>›</i></button>
+          <button type="button" data-profile-action="目标管理"><span class="setting-icon target-small"></span><strong>目标管理</strong><i>›</i></button>
+          <button type="button" data-profile-action="反馈建议"><span class="setting-icon sync-small">↕</span><strong>反馈建议</strong><i>›</i></button>
+          <button type="button" data-profile-action="体重单位"><span class="setting-icon pen-small">◆</span><strong>体重单位</strong><i>›</i></button>
+          <button type="button" data-profile-action="主题颜色"><span class="setting-icon theme-small">◒</span><strong>主题颜色</strong><i>›</i></button>
+          <button type="button" data-profile-action="给我们评分"><span class="setting-icon heart-small">♡</span><strong>给我们评分</strong><i>›</i></button>
+          <button type="button" data-profile-action="推荐给朋友"><span class="setting-icon friends-small">♣</span><strong>推荐给朋友</strong><i>›</i></button>
+          <button type="button" data-profile-action="关于我们"><span class="setting-icon about-small">▣</span><strong>关于我们</strong><i>›</i></button>
+        </section>
+      </section>
+      <section id="recordDetail" class="record-detail" aria-label="体重记录详情页">
+        <header class="detail-header">
+          <button id="backToTimeline" type="button" aria-label="返回">‹</button>
+          <div>
+            <strong id="detailDateTitle">5月1日</strong>
+            <span id="detailTimeTitle">10:55</span>
+          </div>
+        </header>
+
+        <section class="detail-summary">
+          <div>
+            <span>体重</span>
+            <strong class="detail-weight-row"><input id="detailWeightInput" type="number" min="1" step="0.1" /><button id="detailLockToggle" class="detail-lock locked" type="button" aria-label="单位切换不换算" aria-pressed="true"><span class="lock-shackle"></span><span class="lock-body"></span></button></strong>
+          </div>
+          <div>
+            <span>体重变化</span>
+            <strong id="detailDeltaText">-1.8斤</strong>
+          </div>
+        </section>
+
+        <div class="unit-group detail-unit-group" role="group" aria-label="详情体重单位">
+          <button class="detail-unit active" type="button" data-detail-unit="jin">斤</button>
+          <button class="detail-unit" type="button" data-detail-unit="kg">公斤</button>
+        </div>
+
+        <section class="detail-food-card">
+          <div>
+            <span>当天吃的食物</span>
+            <strong id="detailFoodText">鸡胸肉、面条</strong>
+          </div>
+          <div>
+            <span>预估热量</span>
+            <strong id="detailKcalText">1000kcal</strong>
+          </div>
+        </section>
+
+        <button class="submit-button detail-save" id="saveRecordDetail" type="button">保存修改</button>
+      </section>
+      <button class="fab" id="openEntry" type="button" aria-label="新增体重记录"><span aria-hidden="true"></span></button>
+
+      <nav class="tabbar" aria-label="底部导航">
+        <button class="tab-item active" type="button" aria-label="记录" data-tab="weight">
+          <svg class="tab-icon check-tab" viewBox="0 0 32 32" aria-hidden="true">
+            <rect x="3" y="3" width="26" height="26" rx="4" fill="currentColor" />
+            <path d="M9.5 16.5l4.4 4.4 8.9-10.2" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+        <button class="tab-item" type="button" aria-label="身体" data-tab="food">
+          <svg class="tab-icon body-tab" viewBox="0 0 32 32" aria-hidden="true">
+            <circle cx="16" cy="6" r="3.4" fill="currentColor" />
+            <path d="M6 12h20" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="square" />
+            <path d="M16 12v15" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="square" />
+            <path d="M10.5 27V16M21.5 27V16" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="square" />
+          </svg>
+        </button>
+        <button class="tab-item" type="button" aria-label="日历" data-tab="trend">
+          <svg class="tab-icon calendar-tab" viewBox="0 0 32 32" aria-hidden="true">
+            <rect x="6" y="7" width="20" height="20" rx="2.5" fill="none" stroke="currentColor" stroke-width="3.2" />
+            <path d="M11 4v6M21 4v6" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="square" />
+            <circle cx="16" cy="18" r="3" fill="currentColor" />
+          </svg>
+        </button>
+        <button class="tab-item" type="button" aria-label="消息" data-tab="chat">
+          <svg class="tab-icon message-tab" viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M6 6h20v16H13l-7 6V6Z" fill="currentColor" />
+          </svg>
+        </button>
+        <button class="tab-item" type="button" aria-label="更多" data-tab="profile">
+          <svg class="tab-icon more-tab" viewBox="0 0 32 32" aria-hidden="true">
+            <circle cx="8" cy="16" r="3" fill="currentColor" />
+            <circle cx="16" cy="16" r="3" fill="currentColor" />
+            <circle cx="24" cy="16" r="3" fill="currentColor" />
+          </svg>
+        </button>
+      </nav>
+    </section>
+
+    <div class="sheet-backdrop" id="sheetBackdrop" hidden></div>
+    <aside class="entry-sheet" id="entrySheet" aria-label="新增体重记录" aria-hidden="true">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title-row">
+        <h2>新增体重</h2>
+        <button id="closeEntry" class="ghost-button" type="button" aria-label="关闭">×</button>
+      </div>
+
+      <form id="entryForm" class="entry-form">
+        <label>
+          <span>日期</span>
+          <input id="entryDate" type="date" required />
+        </label>
+
+        <label>
+          <span>体重</span>
+          <input id="entryWeight" type="number" min="1" step="0.1" placeholder="请输入体重" required />
+        </label>
+
+        <div class="unit-group" role="group" aria-label="体重单位">
+          <button class="unit-button active" type="button" data-unit="jin">斤</button>
+          <button class="unit-button" type="button" data-unit="kg">公斤</button>
+        </div>
+
+        <button class="submit-button" type="submit">保存记录</button>
+      </form>
+    </aside>
+
+
+    <aside class="entry-sheet food-entry-sheet" id="foodEntrySheet" aria-label="新增食物记录" aria-hidden="true">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title-row">
+        <h2>新增食物</h2>
+        <button id="closeFoodEntry" class="ghost-button" type="button" aria-label="关闭">×</button>
+      </div>
+      <form id="foodEntryForm" class="entry-form">
+        <label>
+          <span>日期</span>
+          <input id="foodEntryDate" type="date" required />
+        </label>
+        <label>
+          <span>食物</span>
+          <input id="foodNameInput" type="text" placeholder="例如 鸡胸肉" required />
+        </label>
+        <label>
+          <span>克数</span>
+          <input id="foodGramsInput" type="number" min="1" step="1" placeholder="请输入克数" required />
+        </label>
+        <label>
+          <span>热量 <small>选填，不填将自动估算</small></span>
+          <input id="foodKcalInput" type="number" min="0" step="1" placeholder="例如 120" />
+        </label>
+        <button class="submit-button" type="submit">保存食物</button>
+      </form>
+    </aside>
+
+    <div class="auth-backdrop" id="authBackdrop" hidden></div>
+    <aside class="auth-modal" id="authModal" aria-label="账号登录注册" aria-hidden="true">
+      <div class="sheet-title-row">
+        <h2 id="authTitle">登录账号</h2>
+        <button id="closeAuth" class="ghost-button" type="button" aria-label="关闭">×</button>
+      </div>
+      <form id="authForm" class="auth-form">
+        <label>
+          <span>用户名</span>
+          <input id="authUsername" type="text" autocomplete="username" placeholder="例如 hengran" required />
+        </label>
+        <label>
+          <span>密码</span>
+          <input id="authPassword" type="password" autocomplete="current-password" placeholder="至少 6 位" required />
+        </label>
+        <p class="auth-message" id="authMessage"></p>
+        <button class="submit-button" id="authSubmit" type="submit">登录</button>
+        <button class="auth-switch" id="authSwitch" type="button">没有账号？立即注册</button>
+      </form>
+    </aside>
+    <div class="feature-backdrop" id="featureBackdrop" hidden></div>
+    <aside class="feature-panel" id="featurePanel" aria-label="功能详情" aria-hidden="true">
+      <div class="feature-panel-head">
+        <h2 id="featureTitle">功能详情</h2>
+        <button id="closeFeaturePanel" type="button" aria-label="关闭">×</button>
+      </div>
+      <div class="feature-panel-body" id="featureBody"></div>
+    </aside>
+    <div class="app-notice" id="appNotice" role="status" aria-live="polite" hidden></div>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
