@@ -219,6 +219,7 @@ export default function Home() {
   const [weightForm, setWeightForm] = useState({ date: todayKey(), weight: "" });
   const [foodForm, setFoodForm] = useState({ date: todayKey(), name: "", grams: "", kcal: "" });
   const [profileForm, setProfileForm] = useState({});
+  const [feedbackForm, setFeedbackForm] = useState({ content: "", contact: "" });
   const [chatInput, setChatInput] = useState("");
   const [thinking, setThinking] = useState(false);
   const [messages, setMessages] = useState([{ role: "bot", text: "我是小衡，可以帮你分析体重、饮食和运动计划。" }]);
@@ -460,8 +461,27 @@ export default function Home() {
   }
 
   async function submitFeedback() {
-    setSheet(null);
-    setNotice("已提交反馈");
+    const content = feedbackForm.content.trim();
+    if (!content) return setNotice("请填写反馈内容");
+    try {
+      const res = await fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...feedbackForm,
+          page: tab,
+          profile,
+          account: { id: user.id, email: user.email }
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "反馈发送失败");
+      setFeedbackForm({ content: "", contact: "" });
+      setSheet(null);
+      setNotice("反馈已发送到邮箱");
+    } catch (error) {
+      setNotice(error.message || "反馈发送失败");
+    }
   }
 
   async function askXiaoheng(text = chatInput) {
@@ -747,14 +767,14 @@ export default function Home() {
         </section>
       )}
 
-      {sheet && <Sheet sheet={sheet} setSheet={setSheet} unit={unit} setUnit={setUnit} weightForm={weightForm} setWeightForm={setWeightForm} addWeight={addWeight} foodForm={foodForm} setFoodForm={setFoodForm} addFood={addFood} profileForm={profileForm} setProfileForm={setProfileForm} saveProfile={saveProfile} submitFeedback={submitFeedback} />}
+      {sheet && <Sheet sheet={sheet} setSheet={setSheet} unit={unit} setUnit={setUnit} weightForm={weightForm} setWeightForm={setWeightForm} addWeight={addWeight} foodForm={foodForm} setFoodForm={setFoodForm} addFood={addFood} profileForm={profileForm} setProfileForm={setProfileForm} saveProfile={saveProfile} feedbackForm={feedbackForm} setFeedbackForm={setFeedbackForm} submitFeedback={submitFeedback} />}
       {notice && <div className="toast" onClick={() => setNotice("")}>{notice}</div>}
       <nav className="tabbar">{tabs.map((item) => <button className={tab === item.id ? "active" : ""} key={item.id} onClick={() => setTab(item.id)}><span>{item.icon}</span><b>{item.label}</b></button>)}</nav>
     </main>
   );
 }
 
-function Sheet({ sheet, setSheet, unit, setUnit, weightForm, setWeightForm, addWeight, foodForm, setFoodForm, addFood, profileForm, setProfileForm, saveProfile, submitFeedback }) {
+function Sheet({ sheet, setSheet, unit, setUnit, weightForm, setWeightForm, addWeight, foodForm, setFoodForm, addFood, profileForm, setProfileForm, saveProfile, feedbackForm, setFeedbackForm, submitFeedback }) {
   const unitName = unit === "kg" ? "公斤" : "斤";
   return (
     <>
@@ -767,7 +787,7 @@ function Sheet({ sheet, setSheet, unit, setUnit, weightForm, setWeightForm, addW
         {sheet === "body" && <><div className="input-with-unit"><input type="number" placeholder="身高" value={profileForm.height_cm || ""} onChange={(e) => setProfileForm({ ...profileForm, height_cm: e.target.value })} /><span>cm</span></div><div className="input-with-unit"><input type="number" placeholder="当前体重" value={profileForm.initial_weight || ""} onChange={(e) => setProfileForm({ ...profileForm, initial_weight: e.target.value })} /><span>{unitName}</span></div><button className="primary-btn" onClick={() => saveProfile("body")}>保存</button></>}
         {sheet === "goal" && <><div className="input-with-unit"><input type="number" placeholder="目标体重" value={profileForm.target_weight || ""} onChange={(e) => setProfileForm({ ...profileForm, target_weight: e.target.value })} /><span>{unitName}</span></div><div className="input-with-unit"><input type="number" placeholder="达到目标的天数" value={profileForm.plan_days || ""} onChange={(e) => setProfileForm({ ...profileForm, plan_days: e.target.value })} /><span>天</span></div><button className="primary-btn" onClick={() => saveProfile("goal")}>保存</button></>}
         {sheet === "unit" && <div className="unit-row"><button className={unit === "jin" ? "active" : ""} onClick={() => setUnit("jin")}>斤</button><button className={unit === "kg" ? "active" : ""} onClick={() => setUnit("kg")}>公斤</button></div>}
-        {sheet === "feedback" && <><textarea placeholder="写下你的建议" /><button className="primary-btn" onClick={submitFeedback}>保存</button></>}
+        {sheet === "feedback" && <><textarea placeholder="写下你的建议" value={feedbackForm.content} onChange={(e) => setFeedbackForm({ ...feedbackForm, content: e.target.value })} /><input placeholder="联系方式，选填" value={feedbackForm.contact} onChange={(e) => setFeedbackForm({ ...feedbackForm, contact: e.target.value })} /><button className="primary-btn" onClick={submitFeedback}>发送到邮箱</button></>}
         {sheet === "profile" && <><input placeholder="昵称" value={profileForm.nickname || ""} onChange={(e) => setProfileForm({ ...profileForm, nickname: e.target.value })} /><button className="primary-btn" onClick={() => saveProfile("profile")}>保存</button></>}
         {sheet === "about" && <><p className="about">小衡 v1.0，一个面向减重记录、饮食打卡和 AI 分析的产品原型。</p><button className="primary-btn" onClick={() => setSheet(null)}>保存</button></>}
       </div>

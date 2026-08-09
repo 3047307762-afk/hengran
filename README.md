@@ -48,6 +48,9 @@ NEXT_PUBLIC_SUPABASE_URL=你的 Supabase Project URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY=你的 Supabase anon public key
 DEEPSEEK_API_KEY=你的 DeepSeek API Key
 DEEPSEEK_MODEL=deepseek-v4-flash
+QQ_EMAIL_USER=你的 QQ 邮箱账号
+QQ_EMAIL_PASS=你的 QQ 邮箱 SMTP 授权码
+FEEDBACK_EMAIL_TO=接收反馈的邮箱
 ```
 
 不要把 `.env.local` 上传到 GitHub。
