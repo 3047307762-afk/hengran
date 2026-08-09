@@ -194,8 +194,9 @@ function defaultProfile(user) {
 }
 
 export default function Home() {
-  const configured = hasSupabaseConfig();
-  const [supabase] = useState(() => createBrowserSupabase());
+  const [supabaseConfig, setSupabaseConfig] = useState(null);
+  const configured = hasSupabaseConfig(supabaseConfig);
+  const [supabase, setSupabase] = useState(null);
   const [user, setUser] = useState(null);
   const [account, setAccount] = useState("");
   const [password, setPassword] = useState("");
@@ -265,6 +266,27 @@ export default function Home() {
   const trendDayFoods = foods.filter((item) => item.date === activeTrendDate);
 
   useEffect(() => {
+    let alive = true;
+    fetch("/api/config")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!alive) return;
+        const nextConfig = { url: data.supabaseUrl, anonKey: data.supabaseAnonKey };
+        setSupabaseConfig(nextConfig);
+        setSupabase(createBrowserSupabase(nextConfig));
+      })
+      .catch(() => {
+        if (!alive) return;
+        setSupabaseConfig({ url: "", anonKey: "" });
+        setSupabase(null);
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (supabaseConfig === null) return;
     if (!supabase) {
       setLoading(false);
       return;
@@ -275,7 +297,7 @@ export default function Home() {
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => setUser(session?.user || null));
     return () => sub.subscription.unsubscribe();
-  }, [supabase]);
+  }, [supabase, supabaseConfig]);
 
   useEffect(() => {
     if (supabase && user) loadCloudData();
