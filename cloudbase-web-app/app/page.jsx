@@ -193,6 +193,13 @@ function defaultProfile(user) {
   };
 }
 
+function loginErrorMessage(message) {
+  if (message === "Invalid login credentials") {
+    return "账号或密码不正确，新用户请先注册。";
+  }
+  return message || "登录失败，请稍后再试。";
+}
+
 export default function Home() {
   const [supabaseConfig, setSupabaseConfig] = useState(null);
   const configured = hasSupabaseConfig(supabaseConfig);
@@ -340,7 +347,7 @@ export default function Home() {
     if (!email) return setNotice("账号名只能用小写字母、数字、下划线，3-20 位");
     if (!password) return setNotice("请输入密码");
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setNotice(error ? error.message : "已登录");
+    setNotice(error ? loginErrorMessage(error.message) : "已登录");
   }
 
   async function signUp() {
@@ -575,6 +582,7 @@ export default function Home() {
       <main className="phone shell login-page">
         <h1>小衡体重管理助手</h1>
         <p>登录后，体重、饮食和目标都会保存到云端，不怕换手机或清缓存。</p>
+        <p>新用户请先注册账号。</p>
         <input value={account} onChange={(e) => setAccount(e.target.value)} placeholder="账号名：字母/数字/下划线" />
         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="输入密码，至少 6 位" />
         {registerMode && (
