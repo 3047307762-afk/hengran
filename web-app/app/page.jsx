@@ -102,6 +102,11 @@ function weekdayText(date) {
   return ["周日", "周一", "周二", "周三", "周四", "周五", "周六"][date.getDay()];
 }
 
+function moodByTime(time = "") {
+  const hour = Number(String(time).split(":")[0] || 0);
+  return hour >= 18 || hour < 6 ? "moon" : "sun";
+}
+
 function chartModel(records, unit) {
   const source = sortRecords(records).reverse();
   const values = source.map((item) => unit === "kg" ? Number(item.weight_jin) / 2 : Number(item.weight_jin));
@@ -643,7 +648,7 @@ export default function Home() {
               <div key={item.id}>
                 <div className="date-chip">{formatDate(item.date)}</div>
                 <article className="record-card card" onClick={() => openWeightDetail(item)}>
-                  <div className={`time-tile ${item.mood}`}><span className="weather-icon"></span><em>{item.time}</em></div>
+                  <div className={`time-tile ${item.mood}`}><span>{item.mood === "moon" ? "🌙" : "☀️"}</span><em>{item.time}</em></div>
                   <div><span className="label">体重</span><strong className="value">{Number(item.weight_jin).toFixed(1)}<small>斤</small></strong></div>
                   <div><span className="label">体重变化</span><div className="delta-value"><i className={`delta-dot ${d.cls}`}>{d.mark}</i><strong>{d.num}</strong><small>斤</small></div></div>
                   <span className="chevron">›</span>
@@ -686,7 +691,7 @@ export default function Home() {
           {!selectedFoods.length && <div className="empty">这一天还没有食物记录</div>}
           {selectedFoods.map((item) => (
             <article className="food-card card" key={item.id}>
-              <div className="time-tile food"><span className="food-icon"></span><em>{item.time}</em></div>
+              <div className={`time-tile ${moodByTime(item.time)}`}><span>{moodByTime(item.time) === "moon" ? "🌙" : "☀️"}</span><em>{item.time}</em></div>
               <div><span>食物</span><strong>{item.name}</strong></div>
               <div><span>克数</span><strong>{item.grams}g</strong></div>
               <div><span>预估热量</span><strong>{item.kcal}kcal</strong></div>
@@ -731,7 +736,7 @@ export default function Home() {
               const d = deltaParts(item.delta);
               return (
                 <article className="record-card card" key={item.id} onClick={() => openWeightDetail(item)}>
-                  <div className={`time-tile ${item.mood}`}><span className="weather-icon"></span><em>{item.time}</em></div>
+                  <div className={`time-tile ${item.mood}`}><span>{item.mood === "moon" ? "🌙" : "☀️"}</span><em>{item.time}</em></div>
                   <div><span className="label">体重</span><strong className="value">{Number(item.weight_jin).toFixed(1)}<small>斤</small></strong></div>
                   <div><span className="label">体重变化</span><div className="delta-value"><i className={`delta-dot ${d.cls}`}>{d.mark}</i><strong>{d.num}</strong><small>斤</small></div></div>
                   <span className="chevron">›</span>
@@ -740,7 +745,7 @@ export default function Home() {
             })}
             {trendDayFoods.map((item) => (
               <article className="food-card card" key={item.id}>
-                <div className="time-tile food"><span className="food-icon"></span><em>{item.time}</em></div>
+                <div className={`time-tile ${moodByTime(item.time)}`}><span>{moodByTime(item.time) === "moon" ? "🌙" : "☀️"}</span><em>{item.time}</em></div>
                 <div><span>食物</span><strong>{item.name}</strong></div>
                 <div><span>克数</span><strong>{item.grams}g</strong></div>
                 <div><span>预估热量</span><strong>{item.kcal}kcal</strong></div>
