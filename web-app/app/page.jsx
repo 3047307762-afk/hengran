@@ -4,11 +4,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createBrowserSupabase, hasSupabaseConfig } from "../lib/supabase";
 
 const tabs = [
-  { id: "weight", label: "体重", icon: "☑" },
-  { id: "food", label: "饮食", icon: "♟" },
-  { id: "trend", label: "趋势", icon: "▣" },
-  { id: "chat", label: "小衡", icon: "■" },
-  { id: "profile", label: "我的", icon: "•••" }
+  { id: "weight", label: "体重" },
+  { id: "food", label: "饮食" },
+  { id: "trend", label: "趋势" },
+  { id: "chat", label: "小衡" },
+  { id: "profile", label: "我的" }
 ];
 
 const weeks = ["一", "二", "三", "四", "五", "六", "日"];
@@ -254,6 +254,7 @@ export default function Home() {
   const topics = topicSets[stats.checkDays % topicSets.length];
   const trendRecords = useMemo(() => trendRangeRecords(weights, trendRange), [weights, trendRange]);
   const chart = chartModel(trendRecords, unit);
+  const chartLine = chart.points.map((point) => `${point.left},${point.top}`).join(" ");
   const activeTrendDate = selectedTrendDate || chart.points[chart.points.length - 1]?.date || sortedWeights[0]?.date || todayKey();
   const trendDayWeights = sortedWeights.filter((item) => item.date === activeTrendDate);
   const trendDayFoods = foods.filter((item) => item.date === activeTrendDate);
@@ -278,6 +279,12 @@ export default function Home() {
   useEffect(() => {
     chatBottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, thinking]);
+
+  useEffect(() => {
+    if (!notice) return;
+    const timer = setTimeout(() => setNotice(""), 2000);
+    return () => clearTimeout(timer);
+  }, [notice]);
 
   async function loadCloudData() {
     const [{ data: weightRows }, { data: foodRows }, { data: profileRows }] = await Promise.all([
@@ -306,7 +313,7 @@ export default function Home() {
     if (!email) return setNotice("账号名只能用小写字母、数字、下划线，3-20 位");
     if (!password) return setNotice("请输入密码");
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) setNotice(error.message);
+    setNotice(error ? error.message : "已登录");
   }
 
   async function signUp() {
@@ -484,6 +491,13 @@ export default function Home() {
     }
   }
 
+  async function shareApp() {
+    const url = typeof window !== "undefined" ? window.location.origin : "https://hengran.vercel.app";
+    const text = `打开浏览器，搜索网址：${url}，和我一起健康生活吧！`;
+    await navigator.clipboard?.writeText(text);
+    setNotice("已复制");
+  }
+
   async function askXiaoheng(text = chatInput) {
     const message = text.trim();
     if (!message || thinking) return;
@@ -558,7 +572,7 @@ export default function Home() {
           <div className="head-copy"><div className="date">修改个人信息</div><div className="time">头像、昵称和基础信息</div></div>
         </div>
         <div className="profile-edit-card card">
-          <label><span>头像</span><b className="mini-avatar">☺</b></label>
+          <label><span>头像</span><b className="mini-avatar"><i></i></b></label>
           <label><span>昵称</span><input value={profileForm.nickname || ""} onChange={(e) => setProfileForm({ ...profileForm, nickname: e.target.value })} placeholder="请输入昵称" /></label>
           <label><span>生日</span><input type="date" value={profileForm.birthday || ""} onChange={(e) => setProfileForm({ ...profileForm, birthday: e.target.value })} /></label>
           <label><span>性别</span><select value={profileForm.gender || "保密"} onChange={(e) => setProfileForm({ ...profileForm, gender: e.target.value })}><option>保密</option><option>女</option><option>男</option></select></label>
@@ -591,7 +605,7 @@ export default function Home() {
         <div className="unit-row detail-unit"><button className={unit === "jin" ? "active" : ""} onClick={() => switchDetailUnit("jin")}>斤</button><button className={unit === "kg" ? "active" : ""} onClick={() => switchDetailUnit("kg")}>公斤</button></div>
         <div className="food-summary card"><div><span>当天吃的食物</span><strong>{foodsOfDay.length ? foodsOfDay.map((item) => item.name).join("、") : "暂无食物记录"}</strong></div><div><span>预估热量</span><strong>{kcal}kcal</strong></div></div>
         <button className="primary-btn save-btn" onClick={saveWeightDetail}>保存修改</button>
-        <nav className="tabbar fake-tabbar">{tabs.map((item) => <button className={item.id === "weight" ? "active" : ""} key={item.id}><span>{item.icon}</span><b>{item.label}</b></button>)}</nav>
+        <nav className="tabbar fake-tabbar">{tabs.map((item) => <button className={item.id === "weight" ? "active" : ""} key={item.id}><span className={`tab-icon tab-icon-${item.id}`}></span><b>{item.label}</b></button>)}</nav>
       </main>
     );
   }
@@ -615,7 +629,7 @@ export default function Home() {
               <div key={item.id}>
                 <div className="date-chip">{formatDate(item.date)}</div>
                 <article className="record-card card" onClick={() => openWeightDetail(item)}>
-                  <div className={`time-tile ${item.mood}`}><span>{item.mood === "moon" ? "☾" : "☀"}</span><em>{item.time}</em></div>
+                  <div className={`time-tile ${item.mood}`}><span className="weather-icon"></span><em>{item.time}</em></div>
                   <div><span className="label">体重</span><strong className="value">{Number(item.weight_jin).toFixed(1)}<small>斤</small></strong></div>
                   <div><span className="label">体重变化</span><div className="delta-value"><i className={`delta-dot ${d.cls}`}>{d.mark}</i><strong>{d.num}</strong><small>斤</small></div></div>
                   <span className="chevron">›</span>
@@ -636,7 +650,7 @@ export default function Home() {
               <span className="down-arrow">⌄</span>
               <input ref={datePickerRef} className="header-date-input" type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} aria-label="选择日期" />
             </button>
-            <button className="today-button" onClick={() => setSelectedDate(todayKey())}><span>▣</span><b>今</b></button>
+            <button className="today-button" onClick={() => setSelectedDate(todayKey())}><span className="today-icon"></span><b>今</b></button>
           </div>
           <div className="week">{weeks.map((item) => <span key={item}>{item}</span>)}</div>
           <div className="calendar" onMouseDown={(e) => setTouchStartX(e.clientX)} onMouseUp={onCalendarTouchEnd} onTouchStart={(e) => setTouchStartX(e.touches[0].clientX)} onTouchEnd={onCalendarTouchEnd}>
@@ -658,7 +672,7 @@ export default function Home() {
           {!selectedFoods.length && <div className="empty">这一天还没有食物记录</div>}
           {selectedFoods.map((item) => (
             <article className="food-card card" key={item.id}>
-              <div className="time-tile"><span>■</span><em>{item.time}</em></div>
+              <div className="time-tile food"><span className="food-icon"></span><em>{item.time}</em></div>
               <div><span>食物</span><strong>{item.name}</strong></div>
               <div><span>克数</span><strong>{item.grams}g</strong></div>
               <div><span>预估热量</span><strong>{item.kcal}kcal</strong></div>
@@ -683,7 +697,7 @@ export default function Home() {
               <div className="simple-chart">
               {chart.yTicks.map((tick) => <i className="grid-h" key={`h-${tick.value}`} style={{ top: tick.top }} />)}
               {chart.points.map((point) => <i className="grid-v" key={`v-${point.id}`} style={{ left: `${point.left}%` }} />)}
-              {chart.segments.map((segment) => <i className="line-segment-web" key={segment.key} style={{ left: `${segment.left}%`, top: `${segment.top}%`, width: `${segment.width}%`, transform: `rotate(${segment.angle}deg)` }} />)}
+              {chart.points.length > 1 && <svg className="chart-line-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polyline points={chartLine} /></svg>}
               {chart.points.map((point) => <button key={point.id} className={`chart-point ${activeTrendDate === point.date ? "active" : ""}`} style={{ left: `${point.left}%`, top: `${point.top}%` }} onClick={() => setSelectedTrendDate(point.date)}><span>{point.label}</span></button>)}
               {!sortedWeights.length && <div className="chart-empty">记录体重后生成趋势点</div>}
               </div>
@@ -703,7 +717,7 @@ export default function Home() {
               const d = deltaParts(item.delta);
               return (
                 <article className="record-card card" key={item.id} onClick={() => openWeightDetail(item)}>
-                  <div className={`time-tile ${item.mood}`}><span>{item.mood === "moon" ? "☾" : "☀"}</span><em>{item.time}</em></div>
+                  <div className={`time-tile ${item.mood}`}><span className="weather-icon"></span><em>{item.time}</em></div>
                   <div><span className="label">体重</span><strong className="value">{Number(item.weight_jin).toFixed(1)}<small>斤</small></strong></div>
                   <div><span className="label">体重变化</span><div className="delta-value"><i className={`delta-dot ${d.cls}`}>{d.mark}</i><strong>{d.num}</strong><small>斤</small></div></div>
                   <span className="chevron">›</span>
@@ -712,7 +726,7 @@ export default function Home() {
             })}
             {trendDayFoods.map((item) => (
               <article className="food-card card" key={item.id}>
-                <div className="time-tile"><span>■</span><em>{item.time}</em></div>
+                <div className="time-tile food"><span className="food-icon"></span><em>{item.time}</em></div>
                 <div><span>食物</span><strong>{item.name}</strong></div>
                 <div><span>克数</span><strong>{item.grams}g</strong></div>
                 <div><span>预估热量</span><strong>{item.kcal}kcal</strong></div>
@@ -746,7 +760,7 @@ export default function Home() {
         <section className="page profile-page">
           <div className="hero-card">
             <button className="profile-row" onClick={() => { setProfileForm({ ...profile, initial_weight: displayWeight(profile.initial_weight_jin, unit), target_weight: displayWeight(profile.target_weight_jin, unit) }); setProfileDetail(true); }}>
-              <div className="avatar">☺</div>
+              <div className="avatar"><i></i></div>
               <div className="profile-name"><b>{profile.nickname || "小衡用户"}</b><span>点击修改个人信息</span></div>
               <span className="arrow">›</span>
             </button>
@@ -760,7 +774,7 @@ export default function Home() {
             <button onClick={() => setSheet("unit")}><span className="icon-unit"></span><b>体重单位</b><em>›</em></button>
             <button onClick={() => setNotice("功能还没有开发，请您耐心等待")}><span className="icon-theme"></span><b>主题颜色</b><em>›</em></button>
             <button onClick={() => setNotice("功能还没有开发，请您耐心等待")}><span className="icon-rate"></span><b>给我们评分</b><em>›</em></button>
-            <button onClick={() => { navigator.clipboard?.writeText("在微信中搜索【小衡体重管理助手】，和我一起记录健康生活"); setNotice("已复制"); }}><span className="icon-share"></span><b>推荐给朋友</b><em>›</em></button>
+            <button onClick={shareApp}><span className="icon-share"></span><b>推荐给朋友</b><em>›</em></button>
             <button onClick={() => setSheet("about")}><span className="icon-about"></span><b>关于我们</b><em>›</em></button>
           </div>
           <button className="logout" onClick={signOut}>退出登录</button>
@@ -769,7 +783,7 @@ export default function Home() {
 
       {sheet && <Sheet sheet={sheet} setSheet={setSheet} unit={unit} setUnit={setUnit} weightForm={weightForm} setWeightForm={setWeightForm} addWeight={addWeight} foodForm={foodForm} setFoodForm={setFoodForm} addFood={addFood} profileForm={profileForm} setProfileForm={setProfileForm} saveProfile={saveProfile} feedbackForm={feedbackForm} setFeedbackForm={setFeedbackForm} submitFeedback={submitFeedback} />}
       {notice && <div className="toast" onClick={() => setNotice("")}>{notice}</div>}
-      <nav className="tabbar">{tabs.map((item) => <button className={tab === item.id ? "active" : ""} key={item.id} onClick={() => setTab(item.id)}><span>{item.icon}</span><b>{item.label}</b></button>)}</nav>
+      <nav className="tabbar">{tabs.map((item) => <button className={tab === item.id ? "active" : ""} key={item.id} onClick={() => setTab(item.id)}><span className={`tab-icon tab-icon-${item.id}`}></span><b>{item.label}</b></button>)}</nav>
     </main>
   );
 }

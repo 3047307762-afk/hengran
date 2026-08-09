@@ -34,8 +34,11 @@ input, textarea, select { border: 0; outline: 0; }
 .date-chip { width: 72px; height: 26px; line-height: 26px; margin: 14px 0 9px; background: #fff; border-radius: 0 13px 13px 0; text-align: center; font-size: 15px; font-weight: 900; }
 .record-card { display: flex; align-items: center; min-height: 68px; padding: 10px; margin-bottom: 12px; border-radius: 15px; }
 .time-tile { width: 50px; height: 50px; border-radius: 7px; background: #eaf7ff; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #888; margin-right: 13px; flex-shrink: 0; font-weight: 900; }
-.time-tile span { color: #147CFF; font-size: 25px; line-height: 1; }
-.time-tile.sun span, .time-tile:not(.moon) span { color: #ffc400; }
+.weather-icon { position: relative; width: 24px; height: 24px; border-radius: 50%; display: block; background: #ffc400; }
+.weather-icon::before { content: ""; position: absolute; inset: -5px; border-radius: 50%; background: repeating-conic-gradient(from 0deg, #ffc400 0 10deg, transparent 10deg 30deg); z-index: -1; }
+.time-tile.moon .weather-icon { width: 23px; height: 23px; background: transparent; box-shadow: -7px 0 0 #147CFF; transform: translateX(6px); }
+.time-tile.moon .weather-icon::before { display: none; }
+.food-icon { width: 19px; height: 19px; border-radius: 5px; display: block; background: #147CFF; transform: rotate(45deg) scale(.85); }
 .time-tile em { font-style: normal; font-size: 13px; }
 .record-card > div:nth-child(2), .record-card > div:nth-child(3) { flex: 1; min-width: 0; }
 .label, .food-card span { display: block; font-size: 13px; margin-bottom: 7px; font-weight: 900; }
@@ -57,7 +60,8 @@ input, textarea, select { border: 0; outline: 0; }
 .meta { display: flex; flex-direction: column; font-size: 13px; font-weight: 900; margin-right: 5px; }
 .down-arrow { font-size: 15px; font-weight: 900; margin-top: 8px; }
 .today-button { width: 30px; height: 30px; border: 2px solid #fff; border-radius: 6px; background: transparent; color: #fff; margin-left: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.today-button span { font-size: 15px; line-height: 12px; }
+.today-button .today-icon { width: 14px; height: 14px; border: 2px solid currentColor; border-radius: 2px; position: relative; }
+.today-button .today-icon::before { content: ""; position: absolute; left: 2px; right: 2px; top: 3px; height: 2px; background: currentColor; }
 .today-button b { font-size: 11px; line-height: 12px; }
 .week, .calendar { display: flex; flex-wrap: wrap; }
 .week { background: #147CFF; color: #fff; margin: 0 -16px; text-align: center; font-size: 13px; font-weight: 900; height: 20px; line-height: 20px; }
@@ -88,10 +92,11 @@ input, textarea, select { border: 0; outline: 0; }
 .y-axis-web { position: relative; width: 34px; height: 205px; flex-shrink: 0; }
 .y-axis-web span { position: absolute; right: 7px; transform: translateY(-50%); font-size: 12px; font-weight: 900; color: #fff; white-space: nowrap; }
 .simple-chart { position: relative; flex: 1; height: 205px; border-left: 1px solid rgba(255,255,255,.32); border-right: 1px solid rgba(255,255,255,.18); overflow: visible; }
-.grid-h, .grid-v, .line-segment-web { position: absolute; display: block; pointer-events: none; }
+.grid-h, .grid-v { position: absolute; display: block; pointer-events: none; }
 .grid-h { left: 0; right: 0; height: 1px; background: rgba(255,255,255,.2); }
 .grid-v { top: 18px; bottom: 24px; width: 1px; background: rgba(255,255,255,.2); }
-.line-segment-web { height: 2px; background: #fff; border-radius: 999px; transform-origin: 0 50%; z-index: 2; }
+.chart-line-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 2; }
+.chart-line-svg polyline { fill: none; stroke: #fff; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
 .chart-point { position: absolute; width: 14px; height: 14px; margin: -7px 0 0 -7px; border: 3px solid #fff; border-radius: 50%; background: #147CFF; z-index: 3; padding: 0; }
 .chart-point.active { background: #fff; }
 .chart-point span { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 12px; font-weight: 900; white-space: nowrap; }
@@ -127,6 +132,9 @@ input, textarea, select { border: 0; outline: 0; }
 .hero-card { margin: 0 -8px 14px; min-height: 198px; padding: 72px 18px 15px; border-radius: 0 0 10px 10px; background: #acd9fa; color: #147CFF; }
 .profile-row { display: flex; align-items: center; width: 100%; background: transparent; padding: 0; text-align: left; }
 .avatar { width: 70px; height: 70px; margin-right: 13px; flex-shrink: 0; background: #fff; border-radius: 0; color: #147CFF; display: grid; place-items: center; font-size: 42px; font-weight: 900; }
+.avatar i, .mini-avatar i { width: 45px; height: 45px; border: 4px solid #147CFF; border-radius: 10px; display: block; position: relative; }
+.avatar i::before, .mini-avatar i::before { content: ""; position: absolute; left: 9px; top: 11px; width: 5px; height: 5px; border-radius: 50%; background: #147CFF; box-shadow: 18px 0 0 #147CFF; }
+.avatar i::after, .mini-avatar i::after { content: ""; position: absolute; left: 11px; top: 24px; width: 17px; height: 8px; border-bottom: 4px solid #147CFF; border-radius: 0 0 18px 18px; }
 .profile-name { flex: 1; min-width: 0; }
 .profile-name b { display: block; font-size: 23px; font-weight: 900; line-height: 1.15; }
 .profile-name span { display: block; color: #7f858b; font-size: 15px; margin-top: 5px; font-weight: 800; }
@@ -153,7 +161,10 @@ input, textarea, select { border: 0; outline: 0; }
 .profile-edit-card label:last-child { border-bottom: 0; }
 .profile-edit-card label > span { color: #111; flex: 0 0 88px; }
 .profile-edit-card input, .profile-edit-card select { flex: 1; min-width: 0; height: 42px; background: transparent; text-align: right; font-size: 16px; font-weight: 900; color: #555; }
-.mini-avatar { width: 42px; height: 42px; border-radius: 9px; background: #f1f9ff; color: #147CFF; display: grid; place-items: center; font-size: 28px; }
+.mini-avatar { width: 42px; height: 42px; border-radius: 9px; background: #f1f9ff; color: #147CFF; display: grid; place-items: center; }
+.mini-avatar i { width: 30px; height: 30px; border-width: 3px; border-radius: 7px; }
+.mini-avatar i::before { left: 6px; top: 7px; width: 4px; height: 4px; box-shadow: 12px 0 0 #147CFF; }
+.mini-avatar i::after { left: 8px; top: 16px; width: 11px; height: 6px; border-bottom-width: 3px; }
 .line-input { flex: 1; display: flex; align-items: center; justify-content: flex-end; min-width: 0; gap: 6px; }
 .line-input input { flex: 0 1 120px; }
 .line-input em { color: #777; font-size: 14px; font-style: normal; font-weight: 900; }
@@ -186,7 +197,16 @@ input, textarea, select { border: 0; outline: 0; }
 .tabbar { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: min(100vw, 430px); height: 76px; border-top: 1px solid #d7edf8; background: #fff; display: grid; grid-template-columns: repeat(5, 1fr); z-index: 15; }
 .tabbar button { height: 76px; border-radius: 0; background: transparent; color: #888; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
 .tabbar button.active { color: #147CFF; }
-.tabbar span { font-size: 18px; line-height: 1; }
+.tab-icon { width: 21px; height: 21px; position: relative; display: block; color: currentColor; }
+.tab-icon-weight { border: 2px solid currentColor; border-radius: 3px; }
+.tab-icon-weight::before { content: ""; position: absolute; left: 4px; top: 2px; width: 8px; height: 12px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); }
+.tab-icon-food::before { content: ""; position: absolute; left: 9px; top: 2px; width: 2px; height: 17px; background: currentColor; }
+.tab-icon-food::after { content: ""; position: absolute; left: 5px; top: 2px; width: 10px; height: 12px; border-left: 2px solid currentColor; border-right: 2px solid currentColor; }
+.tab-icon-trend { border: 2px solid currentColor; border-radius: 3px; }
+.tab-icon-trend::before { content: ""; position: absolute; left: 4px; top: 4px; right: 4px; bottom: 4px; border-top: 2px solid currentColor; transform: rotate(-22deg); transform-origin: left center; }
+.tab-icon-chat::before { content: ""; position: absolute; inset: 3px 2px 5px; border-radius: 3px; background: currentColor; }
+.tab-icon-chat::after { content: ""; position: absolute; left: 7px; bottom: 2px; border-top: 6px solid currentColor; border-right: 5px solid transparent; }
+.tab-icon-profile::before { content: ""; position: absolute; left: 1px; top: 8px; width: 4px; height: 4px; border-radius: 50%; background: currentColor; box-shadow: 7px 0 0 currentColor, 14px 0 0 currentColor; }
 .tabbar b { font-size: 12px; font-weight: 500; }
 .detail-page { min-height: 100vh; background: #eaf7ff; padding-bottom: 92px; }
 .detail-head { height: 108px; background: #147CFF; color: #fff; display: flex; align-items: center; padding: 23px 16px 0; }
