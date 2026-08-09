@@ -131,10 +131,7 @@ input, textarea, select { border: 0; outline: 0; }
 .profile-page { padding: 0 16px 92px; }
 .hero-card { margin: 0 -8px 14px; min-height: 198px; padding: 72px 18px 15px; border-radius: 0 0 10px 10px; background: #acd9fa; color: #147CFF; }
 .profile-row { display: flex; align-items: center; width: 100%; background: transparent; padding: 0; text-align: left; }
-.avatar { width: 70px; height: 70px; margin-right: 13px; flex-shrink: 0; background: #fff; border-radius: 0; color: #147CFF; display: grid; place-items: center; font-size: 42px; font-weight: 900; }
-.avatar i, .mini-avatar i { width: 45px; height: 45px; border: 4px solid #147CFF; border-radius: 10px; display: block; position: relative; }
-.avatar i::before, .mini-avatar i::before { content: ""; position: absolute; left: 9px; top: 11px; width: 5px; height: 5px; border-radius: 50%; background: #147CFF; box-shadow: 18px 0 0 #147CFF; }
-.avatar i::after, .mini-avatar i::after { content: ""; position: absolute; left: 11px; top: 24px; width: 17px; height: 8px; border-bottom: 4px solid #147CFF; border-radius: 0 0 18px 18px; }
+.avatar { width: 70px; height: 70px; margin-right: 13px; flex-shrink: 0; background: #fff; border-radius: 0; object-fit: cover; }
 .profile-name { flex: 1; min-width: 0; }
 .profile-name b { display: block; font-size: 23px; font-weight: 900; line-height: 1.15; }
 .profile-name span { display: block; color: #7f858b; font-size: 15px; margin-top: 5px; font-weight: 800; }
@@ -153,7 +150,7 @@ input, textarea, select { border: 0; outline: 0; }
 .profile-list button { width: 100%; height: 48px; padding: 0 16px; border-bottom: 1px solid #c7ecff; background: #fff; font-size: 16px; font-weight: 900; display: grid; grid-template-columns: 30px 1fr 20px; align-items: center; column-gap: 10px; color: #111; text-align: left; }
 .profile-list button:last-child { border-bottom: 0; }
 .profile-list em { color: #888; font-size: 23px; font-style: normal; text-align: right; }
-.profile-list span { width: 22px; height: 22px; justify-self: center; background: #147CFF; display: block; }
+.profile-list span { width: 22px; height: 22px; justify-self: center; background: transparent; display: block; position: relative; color: #147CFF; }
 .profile-edit-page { min-height: 100vh; background: #eaf7ff; padding-bottom: 32px; }
 .profile-edit-head { height: 124px; align-items: center; }
 .profile-edit-card { margin: 20px 18px 16px; border-radius: 13px; padding: 0 18px; overflow: hidden; }
@@ -161,21 +158,26 @@ input, textarea, select { border: 0; outline: 0; }
 .profile-edit-card label:last-child { border-bottom: 0; }
 .profile-edit-card label > span { color: #111; flex: 0 0 88px; }
 .profile-edit-card input, .profile-edit-card select { flex: 1; min-width: 0; height: 42px; background: transparent; text-align: right; font-size: 16px; font-weight: 900; color: #555; }
-.mini-avatar { width: 42px; height: 42px; border-radius: 9px; background: #f1f9ff; color: #147CFF; display: grid; place-items: center; }
-.mini-avatar i { width: 30px; height: 30px; border-width: 3px; border-radius: 7px; }
-.mini-avatar i::before { left: 6px; top: 7px; width: 4px; height: 4px; box-shadow: 12px 0 0 #147CFF; }
-.mini-avatar i::after { left: 8px; top: 16px; width: 11px; height: 6px; border-bottom-width: 3px; }
+.mini-avatar { width: 42px; height: 42px; border-radius: 9px; background: #f1f9ff; object-fit: cover; }
 .line-input { flex: 1; display: flex; align-items: center; justify-content: flex-end; min-width: 0; gap: 6px; }
 .line-input input { flex: 0 1 120px; }
 .line-input em { color: #777; font-size: 14px; font-style: normal; font-weight: 900; }
 .profile-save-btn { width: 180px; margin: 24px auto 0; }
-.icon-body { transform: rotate(-12deg); clip-path: polygon(0 0, 22% 0, 22% 75%, 100% 75%, 100% 100%, 0 100%); }
-.icon-goal, .icon-rate { border-radius: 50%; background: transparent !important; border: 3px solid #147CFF; }
-.icon-feedback { clip-path: polygon(0 0, 18% 0, 18% 72%, 45% 44%, 72% 72%, 72% 0, 90% 0, 90% 100%, 72% 100%, 45% 72%, 18% 100%, 0 100%); }
-.icon-unit { transform: rotate(45deg) scale(.8); }
-.icon-theme { border-radius: 50%; }
-.icon-share { border-radius: 50%; transform: scale(.7); }
-.icon-about { border-radius: 3px; }
+.icon-body { border-left: 3px solid #147CFF; border-bottom: 3px solid #147CFF; border-radius: 2px; transform: rotate(-12deg); }
+.icon-body::before { content: ""; position: absolute; width: 7px; height: 7px; border-radius: 50%; border: 3px solid #147CFF; left: 4px; top: -6px; }
+.icon-goal, .icon-rate { border-radius: 50%; border: 3px solid #147CFF; }
+.icon-goal::before { content: ""; position: absolute; width: 6px; height: 6px; background: #147CFF; border-radius: 50%; left: 5px; top: 5px; }
+.icon-feedback { border-left: 3px solid #147CFF; border-right: 3px solid #147CFF; }
+.icon-feedback::before { content: ""; position: absolute; width: 10px; height: 10px; border-left: 3px solid #147CFF; border-bottom: 3px solid #147CFF; transform: rotate(-45deg); left: 3px; top: 5px; }
+.icon-unit { border-radius: 3px; background: #147CFF !important; transform: rotate(45deg) scale(.72); }
+.icon-theme { border: 3px solid #147CFF; border-radius: 50%; overflow: hidden; }
+.icon-theme::before { content: ""; position: absolute; left: -3px; top: 8px; width: 26px; height: 12px; background: #147CFF; }
+.icon-rate { background: #fff; }
+.icon-rate::before { content: ""; position: absolute; width: 9px; height: 9px; border-right: 3px solid #147CFF; border-bottom: 3px solid #147CFF; transform: rotate(45deg); left: 4px; top: 2px; background: #fff; }
+.icon-share::before { content: ""; position: absolute; width: 7px; height: 7px; background: #147CFF; border-radius: 50%; left: 8px; top: 1px; box-shadow: -8px 11px 0 #147CFF, 8px 11px 0 #147CFF; }
+.icon-share::after { content: ""; position: absolute; width: 18px; height: 11px; border-left: 3px solid #147CFF; border-right: 3px solid #147CFF; border-top: 3px solid #147CFF; left: 1px; top: 10px; }
+.icon-about { border: 3px solid #147CFF; border-radius: 3px; }
+.icon-about::before { content: ""; position: absolute; left: 7px; top: 3px; width: 4px; height: 11px; background: #147CFF; }
 .logout { margin-top: 14px; }
 .sheet-mask { position: fixed; left: 0; right: 0; top: 0; bottom: 0; background: rgba(0,0,0,.28); z-index: 20; }
 .sheet { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: min(100vw, 430px); padding: 10px 16px 20px; background: #fff; border-radius: 18px 18px 0 0; display: flex; flex-direction: column; gap: 10px; z-index: 21; }
@@ -197,16 +199,7 @@ input, textarea, select { border: 0; outline: 0; }
 .tabbar { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: min(100vw, 430px); height: 76px; border-top: 1px solid #d7edf8; background: #fff; display: grid; grid-template-columns: repeat(5, 1fr); z-index: 15; }
 .tabbar button { height: 76px; border-radius: 0; background: transparent; color: #888; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
 .tabbar button.active { color: #147CFF; }
-.tab-icon { width: 21px; height: 21px; position: relative; display: block; color: currentColor; }
-.tab-icon-weight { border: 2px solid currentColor; border-radius: 3px; }
-.tab-icon-weight::before { content: ""; position: absolute; left: 4px; top: 2px; width: 8px; height: 12px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); }
-.tab-icon-food::before { content: ""; position: absolute; left: 9px; top: 2px; width: 2px; height: 17px; background: currentColor; }
-.tab-icon-food::after { content: ""; position: absolute; left: 5px; top: 2px; width: 10px; height: 12px; border-left: 2px solid currentColor; border-right: 2px solid currentColor; }
-.tab-icon-trend { border: 2px solid currentColor; border-radius: 3px; }
-.tab-icon-trend::before { content: ""; position: absolute; left: 4px; top: 4px; right: 4px; bottom: 4px; border-top: 2px solid currentColor; transform: rotate(-22deg); transform-origin: left center; }
-.tab-icon-chat::before { content: ""; position: absolute; inset: 3px 2px 5px; border-radius: 3px; background: currentColor; }
-.tab-icon-chat::after { content: ""; position: absolute; left: 7px; bottom: 2px; border-top: 6px solid currentColor; border-right: 5px solid transparent; }
-.tab-icon-profile::before { content: ""; position: absolute; left: 1px; top: 8px; width: 4px; height: 4px; border-radius: 50%; background: currentColor; box-shadow: 7px 0 0 currentColor, 14px 0 0 currentColor; }
+.tabbar img { width: 22px; height: 22px; display: block; object-fit: contain; }
 .tabbar b { font-size: 12px; font-weight: 500; }
 .detail-page { min-height: 100vh; background: #eaf7ff; padding-bottom: 92px; }
 .detail-head { height: 108px; background: #147CFF; color: #fff; display: flex; align-items: center; padding: 23px 16px 0; }
