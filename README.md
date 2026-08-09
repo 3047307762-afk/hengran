@@ -1,100 +1,75 @@
-# 衡燃 Hengran - 体重管理与 AI 助手产品项目
+# 小衡体重管理助手
 
-这是一个面向求职展示的产品经理作品集项目。项目围绕“体重记录、饮食记录、趋势分析、AI 减重助手”展开，包含可本地运行的前后端 Demo、产品需求文档、产品调研文档和原型截图。
+小衡体重管理助手是一款面向个人体重记录、饮食打卡、趋势分析和 AI 问答的健康管理原型。仓库里包含早期本地原型、微信小程序版本，以及当前重点维护的网站版。
 
-项目作者：王嘉鑫  
-联系邮箱：3047307762@qq.com
+## 当前版本
 
-## 项目简介
+- 网站版目录：`web-app/`
+- 技术栈：Next.js、Supabase、DeepSeek API
+- 本地预览：`http://localhost:3000`
+- 数据存储：Supabase 云数据库
+- AI 问答：通过 Next.js 后端接口调用 DeepSeek，API Key 不暴露到浏览器
 
-衡燃是一款面向减重用户的体重管理工具。用户可以记录体重和饮食，查看体重趋势，并通过“小衡 AI 助手”咨询体重变化、饮食热量、减脂方法和平台期调整等问题。
+## 2026-08-09 更新内容
 
-项目核心目标是把单纯的数据记录工具，升级为具备数据解释、阶段复盘和情绪陪伴能力的智能减重助手。
+本次相对之前 GitHub 上传版本，主要新增和重做了网站版：
 
-## 已实现功能
+- 新增 `web-app/` Next.js 网站版，可部署到 Vercel 生成公网链接。
+- 接入 Supabase 登录和云端数据库，体重、饮食、个人资料不再只保存在本地。
+- 登录方式改为账号名 + 密码，避免邮箱验证码频率限制。
+- 注册流程新增基础资料填写：昵称、生日、性别、省市、身高、当前体重、目标体重、计划周期。
+- 个人信息页改成接近微信小程序的独立页面，可查看并保存头像、昵称、生日、性别、省市、身体档案和目标信息。
+- 体重详情页对齐小程序样式，支持锁定/解锁编辑、斤/公斤切换、体重变化展示、当天饮食和热量摘要。
+- 饮食日历改为显示体重变化，支持左右滑切换月份、日期选择和回到今天。
+- 趋势页新增默认、近一周、近三月、全部筛选，支持斤/公斤切换，点击趋势点后显示当天体重和饮食记录。
+- 小衡 AI 问答改为网站后端接口调用 DeepSeek，并结合体重、饮食和个人资料生成更自然的回复。
+- 补充 Supabase 建表脚本 `web-app/supabase-schema.sql` 和 Vercel 环境变量说明。
 
-- 体重记录：首页展示当前体重、BMI、已减重和打卡记录。
-- 饮食记录：支持记录食物、克数和热量，并在日历中同步展示。
-- 趋势分析：根据体重记录生成趋势图，支持不同时间范围查看。
-- 小衡 AI 助手：支持推荐话题、AI 对话、月报卡片和顶部问候话术。
-- 个人中心：支持用户资料、目标管理、反馈建议等基础设置。
-- 后端能力：支持本地账号体系、SQLite 数据存储和接口调用。
-
-## 如何查看项目
-
-### 1. 克隆项目
-
-```bash
-git clone https://github.com/3047307762-afk/hengran.git
-cd hengran
-```
-
-### 2. 启动本地服务
-
-项目使用 Python 内置后端服务，本地运行即可查看 Demo：
+## 本地运行网站版
 
 ```bash
-python server.py
+cd web-app
+npm install
+npm run dev
 ```
 
-### 3. 打开浏览器访问
+浏览器打开：
 
 ```text
-http://localhost:5174
+http://localhost:3000
 ```
 
-建议使用浏览器开发者工具切换到手机尺寸查看页面效果。
+## 环境变量
 
-## 项目文档
+复制 `web-app/.env.example` 为 `web-app/.env.local`，填写：
 
-| 文档 | 说明 |
-|---|---|
-| [【产品文档】AI助手.docx](文档/【产品文档】AI助手.docx) | 小衡 AI 助手功能需求文档，包含需求背景、产品目标、需求说明、异常状态和数据埋点。 |
-| [【产品调研】AI助手.docx](文档/【产品调研】AI助手.docx) | AI 助手竞品调研文档，调研 Sigma、OMY！Sports、Keep、ego、ChattyFit 等产品。 |
-
-## 原型截图
-
-### 体重记录相关
-
-![体重首页](文档/1-1.png)
-![新增体重](文档/1-2.png)
-![体重详情](文档/1-3.png)
-![体重编辑](文档/1-4.png)
-
-### 饮食记录相关
-
-![饮食日历](文档/2-1.png)
-![新增食物](文档/2-2.png)
-
-### 趋势、AI 助手与个人中心
-
-![趋势分析](文档/3.png)
-![小衡 AI 助手](文档/4.png)
-![个人中心](文档/5.png)
-
-## 目录说明
-
-```text
-hengran/
-├─ index.html          # Web 原型页面
-├─ styles.css          # 页面样式
-├─ app.js              # 前端交互逻辑
-├─ server.py           # Python 后端服务
-├─ assets/             # 项目图片资源
-├─ 文档/               # 产品文档、调研文档和原型截图
-└─ README.md           # 项目说明
+```env
+NEXT_PUBLIC_SUPABASE_URL=你的 Supabase Project URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY=你的 Supabase anon public key
+DEEPSEEK_API_KEY=你的 DeepSeek API Key
+DEEPSEEK_MODEL=deepseek-v4-flash
 ```
 
-## 项目亮点
+不要把 `.env.local` 上传到 GitHub。
 
-- 从产品调研、原型设计到前后端 Demo 实现，形成了较完整的产品闭环。
-- AI 助手不是简单聊天框，而是结合体重、饮食和趋势数据的减重陪伴入口。
-- 文档中包含 PRD、竞品分析、功能拆解、异常状态和数据埋点，更贴近真实产品工作流程。
-- Demo 支持本地运行，便于面试时直接展示交互效果。
+## Supabase 初始化
 
-## 联系方式
+打开 Supabase 控制台：
 
-如需了解项目思路、产品文档或演示流程，可以联系：
+1. 进入项目
+2. 点击 `SQL Editor`
+3. 新建 Query
+4. 粘贴并运行 `web-app/supabase-schema.sql`
 
-王嘉鑫  
-邮箱：3047307762@qq.com
+如果之前已经建过表，也可以单独运行：
+
+```sql
+alter table public.profiles add column if not exists birthday text;
+alter table public.profiles add column if not exists gender text default '保密';
+alter table public.profiles add column if not exists city text;
+alter table public.profiles add column if not exists initial_weight_jin numeric;
+```
+
+## 部署到 Vercel
+
+把 `web-app/` 作为 Vercel 项目根目录，环境变量填写与本地一致。部署成功后，Vercel 会生成公网访问链接。
