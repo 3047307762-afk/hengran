@@ -202,6 +202,7 @@ function loginErrorMessage(message) {
 
 export default function Home() {
   const [supabaseConfig, setSupabaseConfig] = useState(null);
+  const connectingCloud = supabaseConfig === null;
   const configured = hasSupabaseConfig(supabaseConfig);
   const [supabase, setSupabase] = useState(null);
   const [user, setUser] = useState(null);
@@ -220,7 +221,7 @@ export default function Home() {
     target_unit: "jin",
     plan_days: ""
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState("weight");
   const [weights, setWeights] = useState([]);
   const [foods, setFoods] = useState([]);
@@ -343,6 +344,7 @@ export default function Home() {
   }
 
   async function signIn() {
+    if (!supabase) return setNotice("正在连接云端，请稍后再试。");
     const email = accountEmail();
     if (!email) return setNotice("账号名只能用小写字母、数字、下划线，3-20 位");
     if (!password) return setNotice("请输入密码");
@@ -351,6 +353,7 @@ export default function Home() {
   }
 
   async function signUp() {
+    if (!supabase) return setNotice("正在连接云端，请稍后再试。");
     const email = accountEmail();
     if (!email) return setNotice("账号名只能用小写字母、数字、下划线，3-20 位");
     if (password.length < 6) return setNotice("密码至少 6 位");
@@ -568,8 +571,7 @@ export default function Home() {
     }
   }
 
-  if (loading) return <main className="phone shell">加载中...</main>;
-  if (!configured) {
+  if (!connectingCloud && !configured) {
     return (
       <main className="phone shell">
         <h1>小衡网站版</h1>
@@ -583,6 +585,7 @@ export default function Home() {
         <h1>小衡体重管理助手</h1>
         <p>登录后，体重、饮食和目标都会保存到云端，不怕换手机或清缓存。</p>
         <p>新用户请先注册账号。</p>
+        {connectingCloud && <p className="cloud-status">正在连接云端，页面可以先填写。</p>}
         <input value={account} onChange={(e) => setAccount(e.target.value)} placeholder="账号名：字母/数字/下划线" />
         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="输入密码，至少 6 位" />
         {registerMode && (

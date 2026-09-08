@@ -219,7 +219,7 @@ export default function Home() {
     target_unit: "jin",
     plan_days: ""
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState("weight");
   const [weights, setWeights] = useState([]);
   const [foods, setFoods] = useState([]);
@@ -321,6 +321,7 @@ export default function Home() {
   }
 
   async function signIn() {
+    if (!supabase) return setNotice("正在连接云端，请稍后再试。");
     const email = accountEmail();
     if (!email) return setNotice("账号名只能用小写字母、数字、下划线，3-20 位");
     if (!password) return setNotice("请输入密码");
@@ -329,6 +330,7 @@ export default function Home() {
   }
 
   async function signUp() {
+    if (!supabase) return setNotice("正在连接云端，请稍后再试。");
     const email = accountEmail();
     if (!email) return setNotice("账号名只能用小写字母、数字、下划线，3-20 位");
     if (password.length < 6) return setNotice("密码至少 6 位");
@@ -546,7 +548,6 @@ export default function Home() {
     }
   }
 
-  if (loading) return <main className="phone shell">加载中...</main>;
   if (!configured) {
     return (
       <main className="phone shell">

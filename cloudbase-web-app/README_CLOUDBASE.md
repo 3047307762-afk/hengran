@@ -10,6 +10,14 @@
 4. 运行端口填：3000。
 5. 构建方式选择 Dockerfile，或让 CloudBase 自动识别 Dockerfile。
 
+## 首屏速度优化
+
+CloudBase 个人/体验套餐可能会出现冷启动：服务一段时间没人访问后，第一次打开会慢一些。可以在服务配置里找「实例规格设置」「扩缩容」「最小实例数」「保持实例」等选项，把最小实例数设置为 1。这样服务会一直保留一个运行实例，首次打开会更快，但会消耗更多资源点。
+
+当前代码也做了首屏优化：页面会先显示登录页并在后台连接 Supabase，不再整页停在“加载中...”。
+
+数据库暂时仍在 Supabase。后续如果把登录和 PostgreSQL 迁到腾讯云，国内访问速度会更稳定，但迁移前需要先确认 CloudBase PostgreSQL 的连接方式、认证方案和数据备份。
+
 ## 必填环境变量
 
 把 Vercel 里已经填过的变量照搬到 CloudBase。注意：`NEXT_PUBLIC_SUPABASE_URL` 和 `NEXT_PUBLIC_SUPABASE_ANON_KEY` 最好同时作为构建变量和运行变量填写，否则前端页面可能拿不到 Supabase 配置：
