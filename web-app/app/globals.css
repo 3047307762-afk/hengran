@@ -39,7 +39,7 @@ input, textarea, select { border: 0; outline: 0; }
 .time-tile.sun span, .time-tile:not(.moon) span { color: #ffc400; }
 .time-tile em { font-style: normal; font-size: 13px; }
 .record-card > div:nth-child(2), .record-card > div:nth-child(3) { flex: 1; min-width: 0; }
-.label, .food-card span { display: block; font-size: 13px; margin-bottom: 7px; font-weight: 900; }
+.label, .food-card > div:not(.time-tile) span { display: block; font-size: 13px; margin-bottom: 7px; font-weight: 900; }
 .value { font-size: 22px; font-weight: 900; }
 .value small { font-size: 14px; }
 .chevron { color: #888; font-size: 26px; }
