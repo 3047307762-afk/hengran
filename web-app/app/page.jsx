@@ -36,6 +36,10 @@ function sortRecords(records) {
   return [...records].sort((a, b) => `${b.date} ${b.time || ""}`.localeCompare(`${a.date} ${a.time || ""}`));
 }
 
+function recordTimeValue(item) {
+  return new Date(`${item.date}T${item.time || "00:00"}`).getTime();
+}
+
 function recalcDeltas(records) {
   const asc = [...records].sort((a, b) => `${a.date} ${a.time || ""}`.localeCompare(`${b.date} ${b.time || ""}`));
   return asc.map((item, index) => {
@@ -164,6 +168,20 @@ function trendRangeRecords(records, range) {
   });
 }
 
+function trendChartRecords(records, range) {
+  if (range !== "all" || records.length <= 16) return records;
+  const buckets = new Map();
+  records.forEach((item) => {
+    const [year, month, day] = item.date.split("-").map(Number);
+    const key = `${year}-${String(month).padStart(2, "0")}-${day <= 15 ? "early" : "late"}`;
+    const current = buckets.get(key);
+    if (!current || recordTimeValue(item) > recordTimeValue(current)) {
+      buckets.set(key, item);
+    }
+  });
+  return Array.from(buckets.values()).sort((a, b) => recordTimeValue(a) - recordTimeValue(b));
+}
+
 function displayWeight(jin, unit) {
   const value = unit === "kg" ? Number(jin || 0) / 2 : Number(jin || 0);
   return value ? Number(value.toFixed(1)) : "";
@@ -265,7 +283,8 @@ export default function Home() {
   const selectedMonth = new Date(`${selectedDate}T00:00:00`);
   const topics = topicSets[stats.checkDays % topicSets.length];
   const trendRecords = useMemo(() => trendRangeRecords(weights, trendRange), [weights, trendRange]);
-  const chart = chartModel(trendRecords, unit);
+  const chartRecords = useMemo(() => trendChartRecords(trendRecords, trendRange), [trendRecords, trendRange]);
+  const chart = chartModel(chartRecords, unit);
   const chartLine = chart.points.map((point) => `${point.left},${point.top}`).join(" ");
   const activeTrendDate = selectedTrendDate || chart.points[chart.points.length - 1]?.date || sortedWeights[0]?.date || todayKey();
   const trendDayWeights = sortedWeights.filter((item) => item.date === activeTrendDate);
