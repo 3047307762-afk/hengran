@@ -71,8 +71,8 @@ input, textarea, select { border: 0; outline: 0; }
 .weight-badge, .kcal-badge { align-self: flex-start; min-width: 34px; height: 16px; border-radius: 4px; color: #fff; font-size: 10px; line-height: 16px; font-style: normal; text-align: center; padding: 0 3px; }
 .weight-badge.loss { background: #5ecbff; }
 .weight-badge.gain, .kcal-badge { background: #ff6868; }
-.stats { height: 78px; min-height: 78px; flex-shrink: 0; margin: 0 -16px 16px; background: #acd9fa; color: #fff; display: flex; text-align: center; align-items: center; }
-.stats div { width: 25%; height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 4px; }
+.stats { height: 78px; min-height: 78px; flex-shrink: 0; margin: 0 -16px 16px; padding-top: 7px; background: #acd9fa; color: #fff; display: flex; text-align: center; align-items: center; }
+.stats div { width: 25%; height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 4px; transform: translateY(2px); }
 .stats strong { font-size: 20px; }
 .stats span { font-size: 12px; font-weight: 900; }
 .empty { min-height: 140px; display: flex; align-items: center; justify-content: center; color: #8e8888; font-size: 16px; font-weight: 900; }
