@@ -745,6 +745,7 @@ export default function Home() {
               <div><span>食物</span><strong>{item.name}</strong></div>
               <div><span>克数</span><strong>{item.grams}g</strong></div>
               <div><span>预估热量</span><strong>{item.kcal}kcal</strong></div>
+              <span className="chevron">›</span>
             </button>
           ))}
           <button className="fab" onClick={() => { setEditingFoodId(null); setFoodForm({ date: selectedDate, name: "", grams: "", kcal: "" }); setSheet("food"); }}>+</button>
@@ -794,12 +795,13 @@ export default function Home() {
               );
             })}
             {trendDayFoods.map((item) => (
-              <article className="food-card card" key={item.id}>
+              <button className="food-card card" key={item.id} type="button" onClick={() => openFoodEdit(item)}>
                 <div className={`time-tile ${moodByTime(item.time)}`}><span>{moodByTime(item.time) === "moon" ? "🌙" : "☀️"}</span><em>{item.time}</em></div>
                 <div><span>食物</span><strong>{item.name}</strong></div>
                 <div><span>克数</span><strong>{item.grams}g</strong></div>
                 <div><span>预估热量</span><strong>{item.kcal}kcal</strong></div>
-              </article>
+                <span className="chevron">›</span>
+              </button>
             ))}
           </div>
         </section>
