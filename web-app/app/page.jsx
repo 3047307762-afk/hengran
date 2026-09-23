@@ -248,6 +248,7 @@ export default function Home() {
   const [selectedDate, setSelectedDate] = useState(todayKey());
   const [weightForm, setWeightForm] = useState({ date: todayKey(), weight: "" });
   const [foodForm, setFoodForm] = useState({ date: todayKey(), name: "", grams: "", kcal: "" });
+  const [editingFoodId, setEditingFoodId] = useState(null);
   const [profileForm, setProfileForm] = useState({});
   const [feedbackForm, setFeedbackForm] = useState({ content: "", contact: "" });
   const [chatInput, setChatInput] = useState("");
@@ -440,7 +441,7 @@ export default function Home() {
     await loadCloudData();
   }
 
-  async function addFood() {
+  async function saveFood() {
     if (!foodForm.date) return setNotice("请选择日期");
     if (!foodForm.name.trim()) return setNotice("请输入食物名称");
     if (!foodForm.grams || Number(foodForm.grams) <= 0) return setNotice("请输入有效克数");
@@ -464,12 +465,33 @@ export default function Home() {
       grams: Number(foodForm.grams || 0),
       kcal
     };
+    if (editingFoodId) {
+      setFoods(foods.map((item) => item.id === editingFoodId ? { ...item, ...row } : item));
+      setSheet(null);
+      setEditingFoodId(null);
+      setFoodForm({ date: selectedDate, name: "", grams: "", kcal: "" });
+      const { error } = await supabase.from("foods").update(row).eq("id", editingFoodId);
+      if (error) setNotice(error.message);
+      await loadCloudData();
+      return;
+    }
     setFoods([{ id: localId(), ...row }, ...foods]);
     setSheet(null);
     setFoodForm({ date: selectedDate, name: "", grams: "", kcal: "" });
     const { error } = await supabase.from("foods").insert(row);
     if (error) setNotice(error.message);
     await loadCloudData();
+  }
+
+  function openFoodEdit(item) {
+    setEditingFoodId(item.id);
+    setFoodForm({
+      date: item.date,
+      name: item.name || "",
+      grams: String(item.grams || ""),
+      kcal: item.kcal ? String(item.kcal) : ""
+    });
+    setSheet("food");
   }
 
   function changeMonth(delta) {
@@ -718,14 +740,14 @@ export default function Home() {
           <div className="date-chip">{formatDate(selectedDate)}</div>
           {!selectedFoods.length && <div className="empty">这一天还没有食物记录</div>}
           {selectedFoods.map((item) => (
-            <article className="food-card card" key={item.id}>
+            <article className="food-card card" key={item.id} onClick={() => openFoodEdit(item)}>
               <div className={`time-tile ${moodByTime(item.time)}`}><span>{moodByTime(item.time) === "moon" ? "🌙" : "☀️"}</span><em>{item.time}</em></div>
               <div><span>食物</span><strong>{item.name}</strong></div>
               <div><span>克数</span><strong>{item.grams}g</strong></div>
               <div><span>预估热量</span><strong>{item.kcal}kcal</strong></div>
             </article>
           ))}
-          <button className="fab" onClick={() => { setFoodForm({ date: selectedDate, name: "", grams: "", kcal: "" }); setSheet("food"); }}>+</button>
+          <button className="fab" onClick={() => { setEditingFoodId(null); setFoodForm({ date: selectedDate, name: "", grams: "", kcal: "" }); setSheet("food"); }}>+</button>
         </section>
       )}
 
@@ -828,23 +850,23 @@ export default function Home() {
         </section>
       )}
 
-      {sheet && <Sheet sheet={sheet} setSheet={setSheet} unit={unit} setUnit={setUnit} weightForm={weightForm} setWeightForm={setWeightForm} addWeight={addWeight} foodForm={foodForm} setFoodForm={setFoodForm} addFood={addFood} profileForm={profileForm} setProfileForm={setProfileForm} saveProfile={saveProfile} feedbackForm={feedbackForm} setFeedbackForm={setFeedbackForm} submitFeedback={submitFeedback} />}
+      {sheet && <Sheet sheet={sheet} setSheet={setSheet} unit={unit} setUnit={setUnit} weightForm={weightForm} setWeightForm={setWeightForm} addWeight={addWeight} foodForm={foodForm} setFoodForm={setFoodForm} saveFood={saveFood} editingFoodId={editingFoodId} profileForm={profileForm} setProfileForm={setProfileForm} saveProfile={saveProfile} feedbackForm={feedbackForm} setFeedbackForm={setFeedbackForm} submitFeedback={submitFeedback} />}
       {notice && <div className="toast" onClick={() => setNotice("")}>{notice}</div>}
       <nav className="tabbar">{tabs.map((item) => <button className={tab === item.id ? "active" : ""} key={item.id} onClick={() => setTab(item.id)}><img src={tab === item.id ? item.activeIcon : item.icon} alt="" /><b>{item.label}</b></button>)}</nav>
     </main>
   );
 }
 
-function Sheet({ sheet, setSheet, unit, setUnit, weightForm, setWeightForm, addWeight, foodForm, setFoodForm, addFood, profileForm, setProfileForm, saveProfile, feedbackForm, setFeedbackForm, submitFeedback }) {
+function Sheet({ sheet, setSheet, unit, setUnit, weightForm, setWeightForm, addWeight, foodForm, setFoodForm, saveFood, editingFoodId, profileForm, setProfileForm, saveProfile, feedbackForm, setFeedbackForm, submitFeedback }) {
   const unitName = unit === "kg" ? "公斤" : "斤";
   return (
     <>
       <div className="sheet-mask" onClick={() => setSheet(null)} />
       <div className="sheet">
         <div className="sheet-handle" />
-        <div className="sheet-head"><h3>{sheet === "weight" ? "新增体重" : sheet === "food" ? "新增食物" : sheet === "body" ? "身体档案" : sheet === "goal" ? "目标管理" : sheet === "unit" ? "体重单位" : sheet === "feedback" ? "反馈建议" : sheet === "profile" ? "个人信息" : "关于我们"}</h3><button onClick={() => setSheet(null)}>×</button></div>
+        <div className="sheet-head"><h3>{sheet === "weight" ? "新增体重" : sheet === "food" ? editingFoodId ? "编辑食物" : "新增食物" : sheet === "body" ? "身体档案" : sheet === "goal" ? "目标管理" : sheet === "unit" ? "体重单位" : sheet === "feedback" ? "反馈建议" : sheet === "profile" ? "个人信息" : "关于我们"}</h3><button onClick={() => setSheet(null)}>×</button></div>
         {sheet === "weight" && <><label>日期</label><input type="date" value={weightForm.date} onChange={(e) => setWeightForm({ ...weightForm, date: e.target.value })} /><label>体重</label><input type="number" placeholder="请输入体重" value={weightForm.weight} onChange={(e) => setWeightForm({ ...weightForm, weight: e.target.value })} /><div className="unit-row"><button className={unit === "jin" ? "active" : ""} onClick={() => setUnit("jin")}>斤</button><button className={unit === "kg" ? "active" : ""} onClick={() => setUnit("kg")}>公斤</button></div><button className="primary-btn" onClick={addWeight}>保存记录</button></>}
-        {sheet === "food" && <><label>日期</label><input type="date" value={foodForm.date} onChange={(e) => setFoodForm({ ...foodForm, date: e.target.value })} /><label>食物 <small>必填</small></label><input placeholder="例如 鸡胸肉" value={foodForm.name} onChange={(e) => setFoodForm({ ...foodForm, name: e.target.value })} /><label>克数 <small>必填</small></label><input type="number" placeholder="请输入克数" value={foodForm.grams} onChange={(e) => setFoodForm({ ...foodForm, grams: e.target.value })} /><label>热量 <small>选填，不填将由 AI 估算</small></label><input type="number" placeholder="例如 120" value={foodForm.kcal} onChange={(e) => setFoodForm({ ...foodForm, kcal: e.target.value })} /><button className="primary-btn" onClick={addFood}>保存食物</button></>}
+        {sheet === "food" && <><label>日期</label><input type="date" value={foodForm.date} onChange={(e) => setFoodForm({ ...foodForm, date: e.target.value })} /><label>食物 <small>必填</small></label><input placeholder="例如 鸡胸肉" value={foodForm.name} onChange={(e) => setFoodForm({ ...foodForm, name: e.target.value })} /><label>克数 <small>必填</small></label><input type="number" placeholder="请输入克数" value={foodForm.grams} onChange={(e) => setFoodForm({ ...foodForm, grams: e.target.value })} /><label>热量 <small>选填，不填将由 AI 估算</small></label><input type="number" placeholder="例如 120" value={foodForm.kcal} onChange={(e) => setFoodForm({ ...foodForm, kcal: e.target.value })} /><button className="primary-btn" onClick={saveFood}>{editingFoodId ? "保存修改" : "保存食物"}</button></>}
         {sheet === "body" && <><div className="input-with-unit"><input type="number" placeholder="身高" value={profileForm.height_cm || ""} onChange={(e) => setProfileForm({ ...profileForm, height_cm: e.target.value })} /><span>cm</span></div><div className="input-with-unit"><input type="number" placeholder="当前体重" value={profileForm.initial_weight || ""} onChange={(e) => setProfileForm({ ...profileForm, initial_weight: e.target.value })} /><span>{unitName}</span></div><button className="primary-btn" onClick={() => saveProfile("body")}>保存</button></>}
         {sheet === "goal" && <><div className="input-with-unit"><input type="number" placeholder="目标体重" value={profileForm.target_weight || ""} onChange={(e) => setProfileForm({ ...profileForm, target_weight: e.target.value })} /><span>{unitName}</span></div><div className="input-with-unit"><input type="number" placeholder="达到目标的天数" value={profileForm.plan_days || ""} onChange={(e) => setProfileForm({ ...profileForm, plan_days: e.target.value })} /><span>天</span></div><button className="primary-btn" onClick={() => saveProfile("goal")}>保存</button></>}
         {sheet === "unit" && <div className="unit-row"><button className={unit === "jin" ? "active" : ""} onClick={() => setUnit("jin")}>斤</button><button className={unit === "kg" ? "active" : ""} onClick={() => setUnit("kg")}>公斤</button></div>}
